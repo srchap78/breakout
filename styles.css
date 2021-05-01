@@ -1,31 +1,43 @@
+body {
+  background-color: #364f6b;
+}
+.name{
+  color: #f4af1b;
+}
+
 .grid {
   position: absolute;
   width: 1120px;
   height: 500px;
-  border: solid purple 2px;
+  border: solid #f4af1b;
 }
 
 .block {
   position: absolute;
   width: 100px;
   height: 25px;
-  background-color: darkorange;
+  background-color: #3fc1c9;
   border-radius: 5px;
   border: solid black 1px;
 }
 .user {
   position: absolute;
-  width: 100px;
+  width: 200px;
   height: 25px;
-  background-color: rgb(13, 6, 75);
+  background-color: #f5f5f5;
   border-radius: 5px;
   border: solid black 1px;
 }
 .ball {
-    position: absolute;
+  position: absolute;
   width: 15px;
   height: 15px;
-  background-color: rgb(253, 2, 2);
+  background-color: #fc5185;
   border-radius: 50px;
   border: solid black 1px;
+}
+
+.instructions {
+  color: #f4af1b;
+  font-size: large;
 }
