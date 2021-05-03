@@ -9,7 +9,7 @@ body {
   position: absolute;
   width: 1120px;
   height: 500px;
-  border: solid #f4af1b;
+  border: solid 1px #f4af1b;
 }
 
 .block {
@@ -20,7 +20,7 @@ body {
   border-radius: 5px;
   border: solid black 1px;
 }
-.user {
+.player {
   position: absolute;
   width: 200px;
   height: 25px;
