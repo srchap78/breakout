@@ -1,5 +1,7 @@
 body {
   background-color: #364f6b;
+  font-size: x-large;
+
 }
 .name{
   color: #f4af1b;
@@ -7,9 +9,10 @@ body {
 
 .grid {
   position: absolute;
-  width: 1120px;
+  width: 1110px;
   height: 500px;
   border: solid 1px #f4af1b;
+  text-align: center;
 }
 
 .block {
@@ -40,4 +43,26 @@ body {
 .instructions {
   color: #f4af1b;
   font-size: large;
+}
+
+.score {
+  text-align: left;
+  color: #f4af1b;
+  font-size: x-large;
+  
+}
+
+.lives {
+  text-align: left;
+  color: #f4af1b;
+  font-size: x-large;
+}
+
+.info {
+  margin: auto;
+  width: 35%;
+  padding: 5px ;
+  font-size: x-large;
+  color: whitesmoke;
+  
 }

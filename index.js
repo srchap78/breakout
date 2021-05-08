@@ -1,14 +1,93 @@
 //the div with class grid
 let grid = document.querySelector(".grid");
 
+//starting score
+let scoreDisplay = document.querySelector("#score");
+let score = 0;
+let livesDisplay = document.querySelector("#lives");
+let lives = 3;
+let instructionsDisplay = document.querySelector(".instructions");
+
 //values from css of .block
-let boardWidth = 1120;
+let boardWidth = 1110;
 let boardHeight = 500;
 let ballDiameter = 15;
 let playerWidth = 200;
 let playerHeight = 25;
 let playerXAxis = 460;
 let playerYAxis = 30;
+let blockWidth = 100;
+let blockHeight = 25;
+
+//function to restart after loss of life
+//resets ball position and sets a new interval
+//after ball his bottom of grid, it is invoked by keyup of spacebar
+function restart(e) {
+  if (e.key === " ") {
+    console.log("you pressed the spacebar");
+    ballCurrentPosition = ballStartPosition;
+    timer = setInterval(moveBall, 25);
+  }
+}
+
+//Blocks
+//class to build blocks and get their 4 points
+class Block {
+  constructor(xAxis, yAxis) {
+    this.bottomLeft = [xAxis, yAxis];
+    this.bottomRight = [xAxis + blockWidth, yAxis];
+    this.topLeft = [xAxis, yAxis + blockHeight];
+    this.topRight = [xAxis + blockWidth, yAxis + blockHeight];
+  }
+}
+
+//array to hold the 10X3 grid of blocks
+let blocks = [
+  new Block(10, 450),
+  new Block(120, 450),
+  new Block(230, 450),
+  new Block(340, 450),
+  new Block(450, 450),
+  new Block(560, 450),
+  new Block(670, 450),
+  new Block(780, 450),
+  new Block(890, 450),
+  new Block(1000, 450),
+
+  new Block(10, 390),
+  new Block(120, 390),
+  new Block(230, 390),
+  new Block(340, 390),
+  new Block(450, 390),
+  new Block(560, 390),
+  new Block(670, 390),
+  new Block(780, 390),
+  new Block(890, 390),
+  new Block(1000, 390),
+
+  new Block(10, 330),
+  new Block(120, 330),
+  new Block(230, 330),
+  new Block(340, 330),
+  new Block(450, 330),
+  new Block(560, 330),
+  new Block(670, 330),
+  new Block(780, 330),
+  new Block(890, 330),
+  new Block(1000, 330),
+];
+
+function drawBlocks() {
+  for (let i = 0; i < blocks.length; i++) {
+    let block = document.createElement("div");
+    block.classList.add("block");
+    block.style.left = blocks[i].bottomLeft[0] + "px";
+    block.style.bottom = blocks[i].bottomLeft[1] + "px";
+    grid.appendChild(block);
+  }
+}
+
+drawBlocks();
 
 //Player block
 let playerBlock = {
@@ -30,7 +109,7 @@ let playerCurrentPosition = playerStartPosition;
 //Ball positions
 let ballStartPosition = [553, 150];
 let ballCurrentPosition = ballStartPosition;
-let xDirection = 3;
+let xDirection = -3;
 let yDirection = 3;
 
 //Ball
@@ -53,10 +132,11 @@ function moveBall() {
   checkForCollisions();
 }
 
-//The setInterval() method calls a function or evaluates an expression at specified intervals (in milliseconds).The setInterval() method will continue calling the function until clearInterval() is called, or the window is closed.
+//The setInterval() method calls a function or evaluates an expression at specified intervals (in milliseconds).The setInterval() method will continue calling the function until clearInterval() is called, or the window is closed. The return value of setInterval() is an ID number that can be passed to clearInterval() to stop the periodically executed function from running another time.
 let timer = setInterval(moveBall, 25);
-
+//
 //Collision checks
+//! some collisions are wrong and need fixed
 function checkForCollisions() {
   //check for ball hitting walls
   if (
@@ -69,9 +149,33 @@ function checkForCollisions() {
   ) {
     changeDirection();
   }
-  //check for if the ball hits the bottom of the grid. Then game stops and player loses
+
+  //check for if the ball hits the bottom of the grid.
+  //! this needs fixed
   if (ballCurrentPosition[1] <= 0) {
-    clearInterval(timer);
+    if (lives > 0) {
+      //stop the interval
+      clearInterval(timer);
+      instructionsDisplay.innerHTML =
+        "You missed! Hit the spacebar to continue. You have " +
+        lives +
+        " lives left.";
+      //Once pressbar is pressed and released a new interval is started
+      document.addEventListener("keyup", (e) => {
+        if (e.key == " ") {
+          console.log("you hit space");
+          //! this needs fixed
+          ballCurrentPosition = ballStartPosition; 
+          timer = setInterval(moveBall, 25);
+        }
+      });
+    } else if (lives === 0) {
+      clearInterval(timer);
+      instructionsDisplay.innerHTML = "You Lose!!";
+    }
+    console.log(lives);
+    livesDisplay.innerHTML = lives;
+    //lives--
   }
   //check for ball hitting player block
   if (
@@ -88,28 +192,46 @@ function checkForCollisions() {
   ) {
     changeDirection();
   }
+  //Check for hitting blocks
+  for (let i = 0; i < blocks.length; i++) {
+    if (
+      ballCurrentPosition[0] > blocks[i].bottomLeft[0] &&
+      ballCurrentPosition[0] < blocks[i].bottomRight[0] &&
+      ballCurrentPosition[1] + ballDiameter > blocks[i].bottomLeft[1] &&
+      ballCurrentPosition[1] + ballDiameter < blocks[i].topLeft[1]
+    ) {
+      let allBlocks = Array.from(document.querySelectorAll(".block"));
+      allBlocks[i].classList.remove("block");
+      blocks.splice(i, 1);
+      changeDirection();
+      score++;
+      scoreDisplay.innerHTML = score + " of " + blocks.length + " blocks hit";
+    }
+  }
 }
 
 //change the ball's direction depending on which way it is currently moving
 function changeDirection() {
-  //if moving to the right and up
+  // x axis= 3px moving to the right, -3 to the left
+  // y axis= 3px moving up, -3 moving down
+  //moving to the right and up
   if (xDirection === 3 && yDirection === 3) {
     yDirection = -3;
     return;
   }
-  //if moving to the right and down
+  //moving to the right and down
   if (xDirection === 3 && yDirection === -3) {
-    xDirection = -3;
-    return;
-  }
-  //if moving to the left and down
-  if (xDirection === -3 && yDirection === -3) {
     yDirection = 3;
     return;
   }
-  //if moving to the left and up
-  if (xDirection === -3 && yDirection === 3) {
+  //moving to the left and down
+  if (xDirection === -3 && yDirection === -3) {
     xDirection = 3;
+    return;
+  }
+  //moving to the left and up
+  if (xDirection === -3 && yDirection === 3) {
+    yDirection = -3;
     return;
   }
 }
@@ -153,6 +275,8 @@ function movePlayer(e) {
       break;
   }
 }
+
 //listen for key presses to move player
 document.addEventListener("keydown", movePlayer);
 
+//restart after hitting bottom
